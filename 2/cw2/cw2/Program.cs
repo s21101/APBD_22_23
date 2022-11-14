@@ -63,12 +63,12 @@ if (args.Length == 3)
 
     if (fileErrorContent.Count > 0)
     {
-        saveFileAsync(Path.GetDirectoryName(resultFilePath) + logFileName, string.Join(",", fileErrorContent.ToArray()));
+        await saveFileAsync(Path.GetDirectoryName(resultFilePath) + logFileName, string.Join(",", fileErrorContent.ToArray()));
     }
 
     if (studentsUniqe.Count > 0)
     {
-        saveFileAsync(resultFilePath, getStudentsFormatedJson(studentsUniqe));
+        await saveFileAsync(resultFilePath, getStudentsFormatedJson(studentsUniqe));
     }
     else 
     {
@@ -111,13 +111,13 @@ bool isValidRow(string[] row)
     return true;
 }
 
-void saveFileAsync(string path, string content)
+async Task saveFileAsync(string path, string content)
 {
     if (!string.IsNullOrEmpty(content))
     {
-        using (StreamWriter stream = new StreamWriter(path))
+        using (StreamWriter sw = new(path))
         {
-            stream.Write(content);
+            await sw.WriteLineAsync(content);
         }
     }
     else
