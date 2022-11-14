@@ -23,7 +23,7 @@ if (args.Length == 3)
 
     if(!File.Exists(sorceFilePath))
     {
-        throw new AggregateException("Sorce file does not exists");
+        throw new AggregateException("Source file does not exists");
     }
 
     IEnumerable<string> fileContent = null;
