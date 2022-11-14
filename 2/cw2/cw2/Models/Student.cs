@@ -1,10 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace cw2.Models
 {
-    internal class Student
+    public class Student
     {
+        [JsonPropertyName("activeStudies")]
+        public static ICollection<Study> studies = new List<Study>();
+
         [Required]
         [JsonPropertyName("indexNumber")]
         public string IndexNumber { get; set; }

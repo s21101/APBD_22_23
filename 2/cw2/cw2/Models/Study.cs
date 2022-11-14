@@ -1,16 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace cw2.Models
 {
-    internal class Study
+    public class Study
     {
+        public Study() { }
         public static ICollection<Study> Studies = new HashSet<Study>();
         public ICollection<Student> Students = new HashSet<Student>();
         [JsonPropertyName("name")]
+        [XmlElement(elementName: "name")]
         public string StudiesName { get; }
         [JsonPropertyName("mode")]
+        [XmlElement(elementName: "mode")]
         public string Mode { get;  }
 
         private Study(string StudiesName, string Mode)
@@ -18,6 +22,7 @@ namespace cw2.Models
             this.StudiesName = StudiesName;
             this.Mode = Mode;
             Studies.Add(this);
+            Student.studies.Add(this);
         }
 
         public static Study CreateStudy (string study, string studyType) {

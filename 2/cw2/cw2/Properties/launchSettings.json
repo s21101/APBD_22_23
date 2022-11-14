@@ -2,7 +2,7 @@
   "profiles": {
     "cw2": {
       "commandName": "Project",
-      "commandLineArgs": "../../../Data/dane.csv x x"
+      "commandLineArgs": "D:\\PJATK\\SEM7\\APBD\\kod_wyklady\\APBD_22_23\\2\\cw2\\cw2\\Data\\dane.csv D:/studenci.json json"
     }
   }
 }

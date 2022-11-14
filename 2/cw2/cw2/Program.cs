@@ -1,41 +1,35 @@
-﻿// See https://aka.ms/new-console-template for more information
-/*Parametry wywolania
- * 
- * 
- */
+﻿ /*Parametry wywolania
+  *  args[0] - sorce file path
+  *  args[1] - save file path
+  *  args[2] - type [JSON]
+  */
 
 using cw2;
 using cw2.Models;
 using System.Text.Json;
 
-Console.WriteLine("Param 1 " + args[0]); 
-Console.WriteLine("Param 2 " + args[1]); 
-Console.WriteLine("Param 3 " + args[2]); 
+for (int i = 0; i < args.Length; i++)
+{
+    Console.WriteLine("Param " + (i + 1) + ": " + args[i]);
+}
 Console.WriteLine("========================================================");
-
-const string logFileName = "log.txt";
-const string logPath = "./logs";
-
-
-
+const string logFileName = "\\log.txt";
 
 if (args.Length == 3)
 {
-    var path = args[0];
-    IEnumerable<string> fileContent = null;
+    var sorceFilePath = args[0];
+    var resultFilePath = args[1];
     ICollection<string> fileErrorContent = new List<string>();
-    IList<Student> studentsContent = new List<Student>();
-    try
-    {
-        fileContent = await getFileContentAsync(path);
 
-    }
-    catch(Exception e) 
+    if(!File.Exists(sorceFilePath))
     {
-        Console.WriteLine(e);
-        fileErrorContent.Add(e.ToString());
-        saveFile(logFileName,logPath,"");
+        throw new AggregateException("Sorce file does not exists");
     }
+
+    IEnumerable<string> fileContent = null;
+    IList<Student> studentsContent = new List<Student>();
+
+    fileContent = await getFileContentAsync(sorceFilePath);
 
     foreach (var item in fileContent)
     {
@@ -61,47 +55,30 @@ if (args.Length == 3)
         }
     }
 
-    ICollection<Student> students = new HashSet<Student>(new MyComparer());
+    ICollection<Student> studentsUniqe = new HashSet<Student>(new MyComparer());
     foreach (Student s in studentsContent)
     {
-        students.Add(s);
+        studentsUniqe.Add(s);
     }
 
-    foreach (Student s in students)
+    if (fileErrorContent.Count > 0)
     {
-    //    Console.WriteLine(s);
+        saveFileAsync(Path.GetDirectoryName(resultFilePath) + logFileName, string.Join(",", fileErrorContent.ToArray()));
     }
 
-    Console.WriteLine("--------------------------------------------");
-    foreach (string s in fileErrorContent)
+    if (studentsUniqe.Count > 0)
     {
-       // Console.WriteLine(s);
+        saveFileAsync(resultFilePath, getStudentsFormatedJson(studentsUniqe));
     }
-
-    foreach (Study st in Study.Studies)
+    else 
     {
-       // Console.WriteLine($"{st.StudiesName} {st.Students.Count()}"  ); 
+        Console.WriteLine("There is nothong to be saved");
     }
-
-    HashSet<string> hs2 = new HashSet<string>() { "Aaa", "bbb" };
-
-    var json = JsonSerializer.Serialize(students);
-    Console.WriteLine(json);
-
-
-
-
-
-
-
-
-
-
-
 }
 else
 {
-    Console.WriteLine("Nieprawidlowa liczba argumentow wywolania");
+    Console.WriteLine("Illegal count of arguments");
+    //throw new AggregateException("Illegal count of arguments");
 }
 
 async Task<IEnumerable<string>> getFileContentAsync (string path)
@@ -124,7 +101,6 @@ async Task<IEnumerable<string>> getFileContentAsync (string path)
 
 bool isValidRow(string[] row)
 {
-
     if(row.Length != 9)
         return false;
     foreach (string s in row)
@@ -135,7 +111,29 @@ bool isValidRow(string[] row)
     return true;
 }
 
-async void saveFile(string path, string name, string content)
-{ 
+void saveFileAsync(string path, string content)
+{
+    if (!string.IsNullOrEmpty(content))
+    {
+        using (StreamWriter stream = new StreamWriter(path))
+        {
+            stream.Write(content);
+        }
+    }
+    else
+    {
+        Console.WriteLine("There is nothing to be saved!");
+    }
+}
 
+string getStudentsFormatedJson(IEnumerable<Student> data)
+{
+    var json = JsonSerializer.Serialize(
+    new
+        {
+            data,
+            Student.studies
+        }
+    );
+    return json;
 }
