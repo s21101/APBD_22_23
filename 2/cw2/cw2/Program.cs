@@ -131,6 +131,8 @@ string getStudentsFormatedJson(IEnumerable<Student> data)
     var json = JsonSerializer.Serialize(
     new
         {
+            CreatedAt =  DateTime.Now,
+            Author = "SA",
             data,
             Student.studies
         }
