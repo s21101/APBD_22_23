@@ -15,9 +15,13 @@ for (int i = 0; i < args.Length; i++)
 Console.WriteLine("========================================================");
 const string logFileName = "\\log.txt";
 
-if (args.Length == 3)
+if (args.Length != 3)
 {
-    var sorceFilePath = args[0];
+    Console.WriteLine("Illegal count of arguments");
+    //throw new AggregateException("Illegal count of arguments");
+}
+
+var sorceFilePath = args[0];
     var resultFilePath = args[1];
     ICollection<string> fileErrorContent = new List<string>();
 
@@ -74,12 +78,8 @@ if (args.Length == 3)
     {
         Console.WriteLine("There is nothong to be saved");
     }
-}
-else
-{
-    Console.WriteLine("Illegal count of arguments");
-    //throw new AggregateException("Illegal count of arguments");
-}
+
+
 
 async Task<IEnumerable<string>> getFileContentAsync (string path)
 {
