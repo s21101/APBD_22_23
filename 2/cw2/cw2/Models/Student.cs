@@ -33,7 +33,6 @@ namespace cw2.Models
         [JsonPropertyName("fathersName")]
         public string FathersName { get; set; }
         [Required]
-        //public University UniversityField { get; set; };
         private Study _Study;
 
         [JsonPropertyName("Studies")]

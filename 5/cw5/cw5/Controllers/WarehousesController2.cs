@@ -22,6 +22,10 @@ namespace cw5.Controllers
             {
                 return Ok(await _dbService.AddProductToWarehouseProcedure(warehouse));
             }
+            catch (ArgumentException e)
+            {
+                return NotFound(e.Message);
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);

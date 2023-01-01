@@ -18,28 +18,49 @@ namespace cw4.Controller
         [HttpGet]
         public async Task<IActionResult> GetAnimalsAsync(string? orderBy)
         {
-            IEnumerable<Animal> res = null;
             try
             {
-                res = await _dbService.GetAnimals(orderBy);
+                return Ok(await _dbService.GetAnimals(orderBy));
             }
             catch (ArgumentException e)
             {
                 return BadRequest(e.Message);
             }
 
-            return Ok(res);
         }
 
 
         [HttpPost]
         public async Task<IActionResult> AddAnimal(Animal newAnimal)
         {
-            return Ok(await _dbService.AddAnimalAsync(newAnimal));
+            try
+            {
+                await _dbService.AddAnimalAsync(newAnimal);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-
-
+        [HttpPut("{idAnimal}")]
+        public async Task<IActionResult> UpdateAnimal(Animal animal, int idAnimal)
+        {
+            try
+            {
+                await _dbService.UpdateAnimalAsync(animal, idAnimal);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
 
         [HttpDelete("idAnimal")]
@@ -48,12 +69,16 @@ namespace cw4.Controller
             try
             {
                 await _dbService.DeleteAnimalAsync(idAnimal);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return NotFound();
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
-            return Ok();
         }
     }
 }

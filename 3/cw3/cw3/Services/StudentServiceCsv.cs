@@ -65,11 +65,8 @@ namespace cw3.Services
                             FathersName = tmpStud[8]
                         };
                     }
-
-
                 }
             }
-
             return null;
         }
         
@@ -86,7 +83,6 @@ namespace cw3.Services
             if (await WriteToFileAsync(string.Join("\n", students)))
             {
                 return student;
-
             }
             else 
             {
@@ -149,7 +145,6 @@ namespace cw3.Services
                     sw.Write(str);
                 }
             }
-
         }
 
         private async Task<bool> WriteToFileAsync(string content)

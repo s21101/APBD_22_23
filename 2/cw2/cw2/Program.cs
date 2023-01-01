@@ -17,67 +17,67 @@ const string logFileName = "\\log.txt";
 
 if (args.Length != 3)
 {
-    Console.WriteLine("Illegal count of arguments");
-    //throw new AggregateException("Illegal count of arguments");
+    Console.WriteLine();
+    throw new AggregateException("Illegal count of arguments");
 }
 
 var sorceFilePath = args[0];
-    var resultFilePath = args[1];
-    ICollection<string> fileErrorContent = new List<string>();
+var resultFilePath = args[1];
+ICollection<string> fileErrorContent = new List<string>();
 
-    if(!File.Exists(sorceFilePath))
+if(!File.Exists(sorceFilePath))
+{
+    throw new AggregateException("Source file does not exists");
+}
+
+IEnumerable<string> fileContent = null;
+IList<Student> studentsContent = new List<Student>();
+
+fileContent = await getFileContentAsync(sorceFilePath);
+
+foreach (var item in fileContent)
+{
+    string[] tmpStud = item.Split(",");
+
+    if (isValidRow(tmpStud))
     {
-        throw new AggregateException("Source file does not exists");
-    }
-
-    IEnumerable<string> fileContent = null;
-    IList<Student> studentsContent = new List<Student>();
-
-    fileContent = await getFileContentAsync(sorceFilePath);
-
-    foreach (var item in fileContent)
-    {
-        string[] tmpStud = item.Split(",");
-
-        if (isValidRow(tmpStud))
+        studentsContent.Add(new Student
         {
-            studentsContent.Add(new Student
-            {
-                FirstName = tmpStud[0],
-                LastName = tmpStud[1],
-                Study = Study.CreateStudy(tmpStud[2], tmpStud[3]),
-                IndexNumber = tmpStud[4],
-                BirthDate = DateTime.Parse(tmpStud[5]),
-                Email = tmpStud[6],
-                MothersName = tmpStud[7],
-                FathersName = tmpStud[8]
-            });
-        }
-        else
-        {
-            fileErrorContent.Add(item);
-        }
+            FirstName = tmpStud[0],
+            LastName = tmpStud[1],
+            Study = Study.CreateStudy(tmpStud[2], tmpStud[3]),
+            IndexNumber = tmpStud[4],
+            BirthDate = DateTime.Parse(tmpStud[5]),
+            Email = tmpStud[6],
+            MothersName = tmpStud[7],
+            FathersName = tmpStud[8]
+        });
     }
+    else
+    {
+        fileErrorContent.Add(item);
+    }
+}
 
-    ICollection<Student> studentsUniqe = new HashSet<Student>(new MyComparer());
-    foreach (Student s in studentsContent)
-    {
-        studentsUniqe.Add(s);
-    }
+ICollection<Student> studentsUniqe = new HashSet<Student>(new MyComparer());
+foreach (Student s in studentsContent)
+{
+    studentsUniqe.Add(s);
+}
 
-    if (fileErrorContent.Count > 0)
-    {
-        await saveFileAsync(Path.GetDirectoryName(resultFilePath) + logFileName, string.Join(",", fileErrorContent.ToArray()));
-    }
+if (fileErrorContent.Count > 0)
+{
+    await saveFileAsync(Path.GetDirectoryName(resultFilePath) + logFileName, string.Join("\n", fileErrorContent.ToArray()));
+}
 
-    if (studentsUniqe.Count > 0)
-    {
-        await saveFileAsync(resultFilePath, getStudentsFormatedJson(studentsUniqe));
-    }
-    else 
-    {
-        Console.WriteLine("There is nothong to be saved");
-    }
+if (studentsUniqe.Count > 0)
+{
+    await saveFileAsync(resultFilePath, getStudentsFormatedJson(studentsUniqe));
+}
+else 
+{
+    Console.WriteLine("There is nothong to be saved");
+}
 
 
 
@@ -129,8 +129,7 @@ async Task saveFileAsync(string path, string content)
 string getStudentsFormatedJson(IEnumerable<Student> data)
 {
     var json = JsonSerializer.Serialize(
-    new
-        {
+    new {
             CreatedAt =  DateTime.Now,
             Author = "SA",
             data,

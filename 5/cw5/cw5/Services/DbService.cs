@@ -6,13 +6,14 @@ namespace cw5.Services
 {
     public class DbService : IDbService
     {
+        private static int MinAmount = 0;
         private IConfiguration _configuration;
+
         public DbService(IConfiguration configuration)
         { 
             _configuration = configuration;
         }
 
-        private static int MinAmount = 0;
         public async Task<int> AddProductToWarehouse(Warehouse warehouse)
         {
 
@@ -28,7 +29,7 @@ namespace cw5.Services
 
             if (warehouse.Amount <= MinAmount)
             {
-                throw new ArgumentException($"Ilosc nie moze byc mniejsza rowna {MinAmount}.");
+                throw new Exception($"Ilosc nie moze byc mniejsza rowna {MinAmount}.");
             }
 
             if (! await IsOrderExists(warehouse))
@@ -40,13 +41,12 @@ namespace cw5.Services
 
             if (await IsOrderCompleted(idOrder))
             {
-                throw new ArgumentException("Zamowienie zostalo juz zrealizowane");
+                throw new Exception("Zamowienie zostalo juz zrealizowane");
             }
-
 
             if (!await UpdateFulfilledDate(idOrder))
             {
-                throw new ArgumentException("Nie udalo sie zaktualizowac FullfielledAt");
+                throw new Exception("Nie udalo sie zaktualizowac FullfielledAt");
             }
 
             return await InsertProductWarehouse(idOrder, warehouse);
@@ -65,18 +65,7 @@ namespace cw5.Services
 
             await con.OpenAsync();
 
-            /*
-            var returnParameter = com.Parameters.Add("@ReturnVal", SqlDbType.Int);
-            returnParameter.Direction = ParameterDirection.ReturnValue;
-            int result = (Int32)returnParameter.Value;
-            */
-
             return await com.ExecuteNonQueryAsync();
-
-
-
-            //return result;
-
         }
 
         private async Task<bool> IsIdForProductExists(int idProduct)

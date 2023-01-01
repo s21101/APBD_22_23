@@ -9,18 +9,24 @@ namespace cw3.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
+        private IStudentsServices _studentServices;
+
         public StudentsController(IStudentsServices studentsServices)
         {
             _studentServices = studentsServices;
         }
 
-        private IStudentsServices _studentServices;
-
         [HttpGet]
         public async Task<IActionResult> GetStudents()
         {
-            IEnumerable<Student> students = await _studentServices.GetStudentsAsync();
-            return Ok(students);
+            try
+            {
+                return Ok(await _studentServices.GetStudentsAsync());
+            }
+            catch (Exception e)
+            { 
+                return BadRequest(e);
+            }
         }
 
         [HttpGet("{indexNumber}")]
@@ -29,7 +35,7 @@ namespace cw3.Controllers
             Student st = await _studentServices.GetStudentByIndexAsync(indexNumber);
             if (st == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             return Ok(st);
@@ -43,7 +49,7 @@ namespace cw3.Controllers
 
             if (s == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             return Ok(s);
@@ -61,15 +67,16 @@ namespace cw3.Controllers
                 return BadRequest(e.Message);
             }
 
-
             return StatusCode(201, student);
         }
+
         [HttpDelete("{indexNumber}")]
         public async Task<IActionResult> DeleteStudent(string indexNumber)
         {
             try
             {
                 await _studentServices.DeleteStudent(indexNumber);
+                return Ok();
             }
             catch (ArgumentException e)
             {
@@ -80,7 +87,6 @@ namespace cw3.Controllers
                 return StatusCode(500, e.Message);
             }
 
-            return Ok();
         }
 
     }
