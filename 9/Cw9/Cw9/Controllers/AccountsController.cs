@@ -31,7 +31,6 @@ namespace Cw9.Controllers
         public async Task<IActionResult> Login(LoginDTO loginRequest)
         {
             var res = await _accountsService.Login(loginRequest);
-            throw new Exception("test");
 
             if (res == null)
             {
