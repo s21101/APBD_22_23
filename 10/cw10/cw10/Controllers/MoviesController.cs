@@ -176,6 +176,14 @@ namespace cw10.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // POST: Movies/Delete/6
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id, bool notUsed)
+        {
+            return await Delete(id);
+        }
+
         [HttpPost]
         public string Index(string searchString, bool notUsed)
         { 
